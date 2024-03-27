@@ -57,6 +57,49 @@ static inline void *spidev_interface_open(const char *path)
     }
     int *handle = (int *)malloc(sizeof(int));
     *handle = fd;
+
+
+
+
+    uint32_t mode;
+
+    // mode |= SPI_LOOP; mode |= SPI_CPHA; mode |= SPI_CPOL; mode |= SPI_LSB_FIRST; mode |= SPI_CS_HIGH; mode |= SPI_3WIRE; mode |= SPI_NO_CS; mode |= SPI_READY;
+    
+    mode = 0;
+    //mode |= SPI_CPHA;
+
+    if (ioctl(fd, SPI_IOC_WR_MODE32 , &mode)<0) {
+        perror("can't set spi mode");
+        return handle;
+    }
+
+    mode = 0;
+
+    if (ioctl(fd, SPI_IOC_RD_MODE32, &mode) < 0)
+        {
+        perror("SPI rd_mode");
+        return handle;
+    }
+
+    printf("spi mode is %08x\n", mode);
+
+
+    uint8_t bits_per_word;
+    bits_per_word = 32;
+
+    if (ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word)) {
+        perror("can't set bits per word");
+    }
+
+    if (ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits_per_word)) {
+        perror("can't get bits per word");
+    }
+    
+    printf("spi bits per word is %d\n", bits_per_word);
+
+
+
+    
     return handle;
 }
 
@@ -84,10 +127,10 @@ static inline uint32_t spidev_interface_transact(void *handle, const uint32_t da
     xfer[0].len = 4; //bytes
 
     //load tx data
-    txbuf[0] = (data >> 24);
-    txbuf[1] = (data >> 16);
-    txbuf[2] = (data >> 8);
-    txbuf[3] = (data >> 0);
+    txbuf[3] = (data >> 24);
+    txbuf[2] = (data >> 16);
+    txbuf[1] = (data >> 8);
+    txbuf[0] = (data >> 0);
 
     long status = ioctl(*fd, SPI_IOC_MESSAGE(1), xfer);
     if (status < 0)
@@ -97,8 +140,8 @@ static inline uint32_t spidev_interface_transact(void *handle, const uint32_t da
 
     //load rx data
     return \
-        (((uint32_t)rxbuf[0]) << 24) |
-        (((uint32_t)rxbuf[1]) << 16) |
-        (((uint32_t)rxbuf[2]) << 8) |
-        (((uint32_t)rxbuf[3]) << 0);
+        (((uint32_t)rxbuf[3]) << 24) |
+        (((uint32_t)rxbuf[2]) << 16) |
+        (((uint32_t)rxbuf[1]) << 8) |
+        (((uint32_t)rxbuf[0]) << 0);
 }

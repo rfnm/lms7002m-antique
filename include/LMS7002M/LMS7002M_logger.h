@@ -12,7 +12,9 @@
 
 #pragma once
 #include <LMS7002M/LMS7002M_config.h>
-#include <stdarg.h>
+#include <linux/kernel.h>
+
+//#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C" {

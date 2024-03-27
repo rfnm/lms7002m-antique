@@ -10,7 +10,7 @@
 /// http://www.apache.org/licenses/LICENSE-2.0
 ///
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include "LMS7002M_impl.h"
 
 void LMS7002M_set_spi_mode(LMS7002M_t *self, const int numWires)

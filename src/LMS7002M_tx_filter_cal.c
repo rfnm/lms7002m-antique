@@ -14,20 +14,20 @@
 #include "LMS7002M_filter_cal.h"
 #include <LMS7002M/LMS7002M_logger.h>
 #include <LMS7002M/LMS7002M_time.h>
-#include <string.h> //memcpy
+//#include <string.h> //memcpy
 
 /***********************************************************************
  * Re-tune the CORDICs based on the bandwidth
  **********************************************************************/
-static void setup_tx_cal_tone(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw)
+static void setup_tx_cal_tone(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw)
 {
     LMS7002M_set_mac_ch(self, channel);
-    const double txtsp_rate = self->cgen_freq;
-    const double tx_nco_freq = bw;
+    volatile double txtsp_rate = self->cgen_freq;
+    volatile double tx_nco_freq = bw;
     LMS7002M_txtsp_set_freq(self, channel, tx_nco_freq/txtsp_rate);
 
-    const double rxtsp_rate = self->cgen_freq/4;
-    const double rx_nco_freq = tx_nco_freq-1e6;
+    volatile double rxtsp_rate = self->cgen_freq/4;
+    volatile double rx_nco_freq = tx_nco_freq-1e6;
     LMS7002M_rxtsp_set_freq(self, channel, rx_nco_freq/rxtsp_rate);
 }
 
@@ -35,7 +35,7 @@ static void setup_tx_cal_tone(LMS7002M_t *self, const LMS7002M_chan_t channel, c
  * Tx calibration loop
  **********************************************************************/
 static int tx_cal_loop(
-    LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw,
+    LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw,
     int *reg_ptr, const int reg_addr, const int reg_max, const char *reg_name)
 {
     LMS7002M_set_mac_ch(self, channel);
@@ -166,7 +166,7 @@ static int tx_cal_init(LMS7002M_t *self, const LMS7002M_chan_t channel)
 /***********************************************************************
  * Perform TBB LPFS5 filter calibration
  **********************************************************************/
-static int tx_cal_tbb_lpfs5(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw)
+static int tx_cal_tbb_lpfs5(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw)
 {
     LMS7002M_set_mac_ch(self, channel);
 
@@ -178,12 +178,12 @@ static int tx_cal_tbb_lpfs5(LMS7002M_t *self, const LMS7002M_chan_t channel, con
     }
 
     //--- setup rcal, path ---//
-    const double f = bw/1e6;
-    const double p1 = 1.93821841029921E-15;
-    const double p2 = -0.0429694461214244;
-    const double p3 = 0.253501254059498;
-    const double p4 = 88.9545445989649;
-    const double p5 = -48.0847491316861;
+    volatile double f = bw/1e6;
+    volatile double p1 = 1.93821841029921E-15;
+    volatile double p2 = -0.0429694461214244;
+    volatile double p3 = 0.253501254059498;
+    volatile double p4 = 88.9545445989649;
+    volatile double p5 = -48.0847491316861;
     const int rcal_lpfs5_tbb = (int)(f*f*f*f*p1 + f*f*f*p2 + f*f*p3 + f*p4 + p5);
     LMS7002M_regs(self)->reg_0x010a_rcal_lpfs5_tbb = rcal_lpfs5_tbb;
     LMS7002M_regs(self)->reg_0x0105_loopb_tbb = 3;
@@ -199,7 +199,7 @@ static int tx_cal_tbb_lpfs5(LMS7002M_t *self, const LMS7002M_chan_t channel, con
 /***********************************************************************
  * Perform TBB LPFLAD filter calibration
  **********************************************************************/
-static int tx_cal_tbb_lpflad(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw)
+static int tx_cal_tbb_lpflad(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw)
 {
     int status = 0;
     LMS7002M_set_mac_ch(self, channel);
@@ -213,12 +213,12 @@ static int tx_cal_tbb_lpflad(LMS7002M_t *self, const LMS7002M_chan_t channel, co
     }
 
     //--- setup rcal, path ---//
-    const double f = bw/1e6;
-    const double p1 = 1.29858903647958E-16;
-    const double p2 = -0.000110746929967704;
-    const double p3 = 0.00277593485991029;
-    const double p4 = 21.0384293169607;
-    const double p5 = -48.4092606238297;
+    volatile double f = bw/1e6;
+    volatile double p1 = 1.29858903647958E-16;
+    volatile double p2 = -0.000110746929967704;
+    volatile double p3 = 0.00277593485991029;
+    volatile double p4 = 21.0384293169607;
+    volatile double p5 = -48.4092606238297;
     const int rcal_lpflad_tbb = (int)(f*f*f*f*p1 + f*f*f*p2 + f*f*p3 + f*p4 + p5);
     LMS7002M_regs(self)->reg_0x0109_rcal_lpflad_tbb = rcal_lpflad_tbb;
     LMS7002M_regs(self)->reg_0x0105_loopb_tbb = 2;
@@ -237,7 +237,7 @@ static int tx_cal_tbb_lpflad(LMS7002M_t *self, const LMS7002M_chan_t channel, co
 /***********************************************************************
  * Perform TBB LPFH filter calibration
  **********************************************************************/
-static int tx_cal_tbb_lpfh(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw)
+static int tx_cal_tbb_lpfh(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw)
 {
     int status = 0;
     LMS7002M_set_mac_ch(self, channel);
@@ -251,12 +251,12 @@ static int tx_cal_tbb_lpfh(LMS7002M_t *self, const LMS7002M_chan_t channel, cons
     }
 
     //--- setup rcal, path ---//
-    const double f = bw/1e6;
-    const double p1 = 1.10383261611112E-06;
-    const double p2 = -0.000210800032517545;
-    const double p3 = 0.0190494874803309;
-    const double p4 = 1.43317445923528;
-    const double p5 = -47.6950779298333;
+    volatile double f = bw/1e6;
+    volatile double p1 = 1.10383261611112E-06;
+    volatile double p2 = -0.000210800032517545;
+    volatile double p3 = 0.0190494874803309;
+    volatile double p4 = 1.43317445923528;
+    volatile double p5 = -47.6950779298333;
     const int rcal_lpfh_tbb = (int)(f*f*f*f*p1 + f*f*f*p2 + f*f*p3 + f*p4 + p5);
     LMS7002M_regs(self)->reg_0x0109_rcal_lpfh_tbb = rcal_lpfh_tbb;
     LMS7002M_regs(self)->reg_0x0105_loopb_tbb = 3;
@@ -275,7 +275,7 @@ static int tx_cal_tbb_lpfh(LMS7002M_t *self, const LMS7002M_chan_t channel, cons
 /***********************************************************************
  * Tx calibration dispatcher
  **********************************************************************/
-int LMS7002M_tbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, double bw, double *bwactual)
+int LMS7002M_tbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw, volatile double *bwactual)
 {
     LMS7002M_set_mac_ch(self, channel);
     int status = 0;
@@ -283,10 +283,10 @@ int LMS7002M_tbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, 
     //ranges to work around filter tuning issues
     //LPFLAD does not calibrate near extreme ranges
     //and LPFS5 does not calibrate at all (FIXME)
-    const double lpflad_start = 3e6;
-    const double lpflad_stop = 13e6;
-    const double lpfh_start = 28e6;
-    const double lpf5_start = lpflad_start; //FIXME -> 0.8e6
+    volatile double lpflad_start = 3e6;
+    volatile double lpflad_stop = 13e6;
+    volatile double lpfh_start = 28e6;
+    volatile double lpf5_start = lpflad_start; //FIXME -> 0.8e6
 
     if (bw < lpf5_start) bw = lpf5_start;
     if (bw > lpflad_stop && bw < lpfh_start) bw = lpfh_start; //clip up to high-band

@@ -13,11 +13,14 @@
 //TODO ifdef this for time on other platforms
 
 #include <LMS7002M/LMS7002M_time.h>
-#include <stdbool.h>
-#include <sys/time.h>
-#include <sys/select.h>
-#include <unistd.h>
+//#include <stdbool.h>
+//#include <sys/time.h>
+//#include <sys/select.h>
+//#include <unistd.h>
 
+#include <linux/delay.h>
+
+#if 0
 long long LMS7_time_tps(void)
 {
     return 1000000;
@@ -49,4 +52,17 @@ void LMS7_sleep_until(const long long ticks)
         tv.tv_usec = left%LMS7_time_tps();
         select(1, NULL, NULL, NULL, &tv);
     }
+}
+#endif
+
+void kernel_neon_begin(void);
+void kernel_neon_end(void);
+
+void LMS7_sleep_for_ms(int ms)
+{
+    //printk("sleep begin");
+    //kernel_neon_end();
+    udelay(ms * 1000);
+    //kernel_neon_begin();
+    //printk("sleep end\n");
 }

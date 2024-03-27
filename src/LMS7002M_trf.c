@@ -10,8 +10,7 @@
 /// http://www.apache.org/licenses/LICENSE-2.0
 ///
 
-#include <stdlib.h>
-#include <math.h> //exp
+//#include <math.h> //exp
 #include "LMS7002M_impl.h"
 
 void LMS7002M_trf_enable(LMS7002M_t *self, const LMS7002M_chan_t channel, const bool enable)
@@ -49,10 +48,10 @@ void LMS7002M_trf_enable_loopback(LMS7002M_t *self, const LMS7002M_chan_t channe
     LMS7002M_regs_spi_write(self, 0x0101);
 }
 
-double LMS7002M_trf_set_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain)
+volatile double LMS7002M_trf_set_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain)
 {
-    const double pmax = 0;
-    double loss = pmax-gain;
+    volatile double pmax = 0;
+    volatile double loss = pmax-gain;
 
     //different scaling realm
     if (loss > 10) loss = (loss+10)/2;
@@ -73,7 +72,7 @@ double LMS7002M_trf_set_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, con
     return pmax-loss_int;
 }
 
-double LMS7002M_trf_set_loopback_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain)
+volatile double LMS7002M_trf_set_loopback_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain)
 {
     //there are 4 discrete gain values, use the midpoints
     double actual = 0.0;

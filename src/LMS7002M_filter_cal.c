@@ -14,14 +14,15 @@
 #include "LMS7002M_filter_cal.h"
 #include <LMS7002M/LMS7002M_time.h>
 
-static long long cal_rssi_sleep_ticks(void)
+/*static long long cal_rssi_sleep_ticks(void)
 {
     return (LMS7_time_tps())/1000; //1 ms -> ticks
-}
+}*/
 
 uint16_t cal_read_rssi(LMS7002M_t *self, const LMS7002M_chan_t channel)
 {
-    LMS7_sleep_for(cal_rssi_sleep_ticks());
+    //LMS7_sleep_for(cal_rssi_sleep_ticks());
+    LMS7_sleep_for_ms(1);
     return LMS7002M_rxtsp_read_rssi(self, channel);
 }
 
@@ -58,9 +59,9 @@ int cal_gain_selection(LMS7002M_t *self, const LMS7002M_chan_t channel)
     return cal_read_rssi(self, channel);
 }
 
-int cal_setup_cgen(LMS7002M_t *self, const double bw)
+int cal_setup_cgen(LMS7002M_t *self, volatile double bw)
 {
-    double cgen_freq = bw*20;
+    volatile double cgen_freq = bw*20;
     if (cgen_freq < 60e6) cgen_freq = 60e6;
     if (cgen_freq > 640e6) cgen_freq = 640e6;
     while ((int)(cgen_freq/1e6) == (int)(bw/16e6)) cgen_freq -= 10e6;

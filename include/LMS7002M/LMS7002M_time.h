@@ -15,6 +15,8 @@
 #pragma once
 #include <LMS7002M/LMS7002M_config.h>
 
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,6 +39,7 @@ LMS7002M_API long long LMS7_time_now(void);
  * \param ticks a time duration in tick counts
  */
 LMS7002M_API void LMS7_sleep_for(const long long ticks);
+LMS7002M_API void LMS7_sleep_for_ms(int ms);
 
 /*!
  * Sleep the caller until the specified time expires..

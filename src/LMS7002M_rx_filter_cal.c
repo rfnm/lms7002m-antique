@@ -15,28 +15,28 @@
 #include "LMS7002M_filter_cal.h"
 #include <LMS7002M/LMS7002M_logger.h>
 #include <LMS7002M/LMS7002M_time.h>
-#include <string.h> //memcpy
+//#include <string.h> //memcpy
 
 /***********************************************************************
  * Re-tune the RX LO based on the bandwidth
  **********************************************************************/
-static int setup_rx_cal_tone(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw)
+static int setup_rx_cal_tone(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw)
 {
     LMS7002M_sxx_enable(self, LMS_RX, true);
     LMS7002M_sxt_to_sxr(self, false);
     int status = 0;
     LMS7002M_set_mac_ch(self, channel);
-    const double sxr_freq = self->sxt_freq-bw;
-    double sxr_freq_actual = 0;
+    volatile double sxr_freq = self->sxt_freq-bw;
+    volatile double sxr_freq_actual = 0;
     status = LMS7002M_set_lo_freq(self, LMS_RX, self->sxr_fref, sxr_freq, &sxr_freq_actual);
     LMS7002M_set_mac_ch(self, channel);
     if (status != 0)
     {
-        LMS7_logf(LMS7_ERROR, "LMS7002M_set_lo_freq(LMS_RX, %f MHz)", sxr_freq/1e6);
+        LMS7_logf(LMS7_ERROR, "LMS7002M_set_lo_freq(LMS_RX, %s MHz)", dtoa1(sxr_freq/1e6));
         goto done;
     }
-    double rxtsp_rate = self->cgen_freq/4;
-    const double rx_nco_freq = (self->sxt_freq-sxr_freq_actual)-1e6;
+    volatile double rxtsp_rate = self->cgen_freq/4;
+    volatile double rx_nco_freq = (self->sxt_freq-sxr_freq_actual)-1e6;
     LMS7002M_rxtsp_set_freq(self, channel, rx_nco_freq/rxtsp_rate);
 
     done:
@@ -47,7 +47,7 @@ static int setup_rx_cal_tone(LMS7002M_t *self, const LMS7002M_chan_t channel, co
  * Rx calibration loop
  **********************************************************************/
 static int rx_cal_loop(
-    LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw,
+    LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw,
     int *reg_ptr, const int reg_addr, const int reg_max, const char *reg_name)
 {
     LMS7002M_set_mac_ch(self, channel);
@@ -161,12 +161,12 @@ static int rx_cal_init(LMS7002M_t *self, const LMS7002M_chan_t channel)
     LMS7002M_set_mac_ch(self, channel);
 
     //--- sxt ---
-    const double sxt_freq = 500e6;
+    volatile double sxt_freq = 500e6;
     status = LMS7002M_set_lo_freq(self, LMS_TX, self->sxt_fref, sxt_freq, NULL);
     LMS7002M_set_mac_ch(self, channel);
     if (status != 0)
     {
-        LMS7_logf(LMS7_ERROR, "LMS7002M_set_lo_freq(LMS_TX, %f MHz)", sxt_freq/1e6);
+        LMS7_logf(LMS7_ERROR, "LMS7002M_set_lo_freq(LMS_TX, %s MHz)", dtoa1(sxt_freq/1e6));
         goto done;
     }
 
@@ -204,7 +204,7 @@ static int rx_cal_init(LMS7002M_t *self, const LMS7002M_chan_t channel)
 /***********************************************************************
  * Perform RFE TIA filter calibration
  **********************************************************************/
-static int rx_cal_tia_rfe(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw)
+static int rx_cal_tia_rfe(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw)
 {
     int status = 0;
     LMS7002M_set_mac_ch(self, channel);
@@ -266,7 +266,7 @@ static int rx_cal_tia_rfe(LMS7002M_t *self, const LMS7002M_chan_t channel, const
 /***********************************************************************
  * Perform RBB LPFL filter calibration
  **********************************************************************/
-static int rx_cal_rbb_lpfl(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw)
+static int rx_cal_rbb_lpfl(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw)
 {
     int status = 0;
     LMS7002M_set_mac_ch(self, channel);
@@ -312,7 +312,7 @@ static int rx_cal_rbb_lpfl(LMS7002M_t *self, const LMS7002M_chan_t channel, cons
 /***********************************************************************
  * Perform RBB LPFH filter calibration
  **********************************************************************/
-static int rx_cal_rbb_lpfh(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw)
+static int rx_cal_rbb_lpfh(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw)
 {
     LMS7002M_set_mac_ch(self, channel);
 
@@ -353,7 +353,7 @@ static int rx_cal_rbb_lpfh(LMS7002M_t *self, const LMS7002M_chan_t channel, cons
 /***********************************************************************
  * Rx calibration dispatcher
  **********************************************************************/
-int LMS7002M_rbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, double bw, double *bwactual)
+int LMS7002M_rbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw, volatile double *bwactual)
 {
     LMS7002M_set_mac_ch(self, channel);
     int status = 0;

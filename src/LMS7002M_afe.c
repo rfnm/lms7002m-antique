@@ -10,7 +10,6 @@
 /// http://www.apache.org/licenses/LICENSE-2.0
 ///
 
-#include <stdlib.h>
 #include "LMS7002M_impl.h"
 
 void LMS7002M_afe_enable(LMS7002M_t *self, const LMS7002M_dir_t direction, const LMS7002M_chan_t channel, const bool enable)

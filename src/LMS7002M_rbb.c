@@ -10,9 +10,9 @@
 /// http://www.apache.org/licenses/LICENSE-2.0
 ///
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include "LMS7002M_impl.h"
-#include <math.h> //pow
+//#include <math.h> //pow
 #include <LMS7002M/LMS7002M_logger.h>
 
 void LMS7002M_rbb_enable(LMS7002M_t *self, const LMS7002M_chan_t channel, const bool enable)
@@ -82,8 +82,11 @@ void LMS7002M_rbb_set_test_out(LMS7002M_t *self, const LMS7002M_chan_t channel, 
     LMS7002M_regs_spi_write(self, 0x0119);
 }
 
-double LMS7002M_rbb_set_pga(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain)
+volatile double LMS7002M_rbb_set_pga(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain)
 {
+    printk("LMS7002M_rbb_set_pga is disabled");
+    return 0;
+    #if 0
     LMS7002M_set_mac_ch(self, channel);
 
     int G_PGA_RBB = (int)(gain + 12.5);
@@ -102,4 +105,5 @@ double LMS7002M_rbb_set_pga(LMS7002M_t *self, const LMS7002M_chan_t channel, con
     LMS7002M_regs_spi_write(self, 0x011A);
 
     return G_PGA_RBB - 12.0;
+    #endif
 }

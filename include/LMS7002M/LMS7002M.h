@@ -12,8 +12,7 @@
 ///
 
 #pragma once
-#include <stdint.h>
-#include <stdbool.h>
+#include <linux/types.h>
 #include <LMS7002M/LMS7002M_config.h>
 #include <LMS7002M/LMS7002M_regs.h>
 
@@ -334,7 +333,7 @@ LMS7002M_API void LMS7002M_afe_enable(LMS7002M_t *self, const LMS7002M_dir_t dir
  * \param factual the actual clock rate in Hz (or NULL)
  * \return 0 for success or error code on failure
  */
-LMS7002M_API int LMS7002M_set_data_clock(LMS7002M_t *self, const double fref, const double fout, double *factual);
+LMS7002M_API int LMS7002M_set_data_clock(LMS7002M_t *self, volatile double fref, volatile double fout, volatile double *factual);
 
 //=====================================================================//
 // Shared helper functions for Rx and TX tsp
@@ -350,7 +349,7 @@ LMS7002M_API int LMS7002M_set_data_clock(LMS7002M_t *self, const double fref, co
  * \param channel the channel LMS_CHA or LMS_CHB
  * \param freqRel a fractional frequency in (-0.5, 0.5)
  */
-LMS7002M_API void LMS7002M_set_nco_freq(LMS7002M_t *self, const LMS7002M_dir_t direction, const LMS7002M_chan_t channel, const double freqRel);
+LMS7002M_API void LMS7002M_set_nco_freq(LMS7002M_t *self, const LMS7002M_dir_t direction, const LMS7002M_chan_t channel, volatile double freqRel);
 
 /*!
  * Set the filter taps for one of the TSP FIR filters.
@@ -403,7 +402,7 @@ LMS7002M_API void LMS7002M_sxx_enable(LMS7002M_t *self, const LMS7002M_dir_t dir
  * \param factual the actual LO frequency in Hz (or NULL)
  * \return 0 for success or error code on failure
  */
-LMS7002M_API int LMS7002M_set_lo_freq(LMS7002M_t *self, const LMS7002M_dir_t direction, const double fref, const double fout, double *factual);
+LMS7002M_API int LMS7002M_set_lo_freq(LMS7002M_t *self, const LMS7002M_dir_t direction, volatile double fref, volatile double fout, volatile double *factual);
 
 /*!
  * Share the transmit LO to the receive chain.
@@ -443,7 +442,7 @@ LMS7002M_API void LMS7002M_txtsp_set_interp(LMS7002M_t *self, const LMS7002M_cha
  * \param channel the channel LMS_CHA or LMS_CHB
  * \param freqRel a fractional frequency in (-0.5, 0.5)
  */
-LMS7002M_API void LMS7002M_txtsp_set_freq(LMS7002M_t *self, const LMS7002M_chan_t channel, const double freqRel);
+LMS7002M_API void LMS7002M_txtsp_set_freq(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double freqRel);
 
 /*!
  * Test constant signal level for TX TSP chain.
@@ -474,8 +473,8 @@ LMS7002M_API void LMS7002M_txtsp_tsg_tone(LMS7002M_t *self, const LMS7002M_chan_
 LMS7002M_API void LMS7002M_txtsp_set_dc_correction(
     LMS7002M_t *self,
     const LMS7002M_chan_t channel,
-    const double valI,
-    const double valQ);
+    volatile double valI,
+    volatile double valQ);
 
 /*!
  * IQ imbalance correction value for Tx TSP chain.
@@ -494,8 +493,8 @@ LMS7002M_API void LMS7002M_txtsp_set_dc_correction(
 LMS7002M_API void LMS7002M_txtsp_set_iq_correction(
     LMS7002M_t *self,
     const LMS7002M_chan_t channel,
-    const double phase,
-    const double gain);
+    volatile double phase,
+    volatile double gain);
 
 //=====================================================================//
 // TBB (transmit baseband chain)
@@ -563,7 +562,7 @@ LMS7002M_API void LMS7002M_tbb_enable_loopback(LMS7002M_t *self, const LMS7002M_
  * \param bwactual the actual filter width in Hz or NULL
  * \return 0 for success or error code on failure
  */
-LMS7002M_API int LMS7002M_tbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw, double *bwactual);
+LMS7002M_API int LMS7002M_tbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw, volatile double *bwactual);
 
 //=====================================================================//
 // TRF (transmit RF frontend)
@@ -600,7 +599,7 @@ LMS7002M_API void LMS7002M_trf_enable_loopback(LMS7002M_t *self, const LMS7002M_
  * \param gain the gain value in dB -52.0 to 0.0
  * \return the actual gain value in dB
  */
-LMS7002M_API double LMS7002M_trf_set_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain);
+LMS7002M_API volatile double LMS7002M_trf_set_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain);
 
 /*!
  * Set the PAD gain (loss) for the TX RF frontend (in RX loopback mode).
@@ -609,7 +608,7 @@ LMS7002M_API double LMS7002M_trf_set_pad(LMS7002M_t *self, const LMS7002M_chan_t
  * \param gain the gain value in dB -24.0 to 0.0
  * \return the actual gain value in dB
  */
-LMS7002M_API double LMS7002M_trf_set_loopback_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain);
+LMS7002M_API volatile double LMS7002M_trf_set_loopback_pad(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain);
 
 //=====================================================================//
 // RxTSP (receive DSP chain)
@@ -640,7 +639,7 @@ LMS7002M_API void LMS7002M_rxtsp_set_decim(LMS7002M_t *self, const LMS7002M_chan
  * \param channel the channel LMS_CHA or LMS_CHB
  * \param freqRel a fractional frequency in (-0.5, 0.5)
  */
-LMS7002M_API void LMS7002M_rxtsp_set_freq(LMS7002M_t *self, const LMS7002M_chan_t channel, const double freqRel);
+LMS7002M_API void LMS7002M_rxtsp_set_freq(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double freqRel);
 
 /*!
  * Test constant signal level for RX TSP chain.
@@ -699,8 +698,8 @@ LMS7002M_API void LMS7002M_rxtsp_set_dc_correction(
 LMS7002M_API void LMS7002M_rxtsp_set_iq_correction(
     LMS7002M_t *self,
     const LMS7002M_chan_t channel,
-    const double phase,
-    const double gain);
+    volatile double phase,
+    volatile double gain);
 
 //=====================================================================//
 // RBB (receive baseband chain)
@@ -748,7 +747,7 @@ LMS7002M_API void LMS7002M_rbb_set_test_out(LMS7002M_t *self, const LMS7002M_cha
  * \param gain the gain value in dB -12.0 to 19.0
  * \return the actual gain value in dB
  */
-LMS7002M_API double LMS7002M_rbb_set_pga(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain);
+LMS7002M_API volatile double LMS7002M_rbb_set_pga(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain);
 
 /*!
  * Set the RX baseband filter bandwidth.
@@ -759,7 +758,7 @@ LMS7002M_API double LMS7002M_rbb_set_pga(LMS7002M_t *self, const LMS7002M_chan_t
  * \param bwactual the actual filter width in Hz or NULL
  * \return 0 for success or error code on failure
  */
-LMS7002M_API int LMS7002M_rbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, const double bw, double *bwactual);
+LMS7002M_API int LMS7002M_rbb_set_filter_bw(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double bw, volatile double *bwactual);
 
 //=====================================================================//
 // RFE (receive RF frontend)
@@ -795,7 +794,7 @@ LMS7002M_API void LMS7002M_rfe_set_path(LMS7002M_t *self, const LMS7002M_chan_t 
  * \param gain the gain value in dB 0 to 30
  * \return the actual gain value in dB
  */
-LMS7002M_API double LMS7002M_rfe_set_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain);
+LMS7002M_API volatile double LMS7002M_rfe_set_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain);
 
 /*!
  * Set the LNA gain for the RX RF frontend (in TX loopback mode).
@@ -804,7 +803,7 @@ LMS7002M_API double LMS7002M_rfe_set_lna(LMS7002M_t *self, const LMS7002M_chan_t
  * \param gain the gain value in dB 0 to 40
  * \return the actual gain value in dB
  */
-LMS7002M_API double LMS7002M_rfe_set_loopback_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain);
+LMS7002M_API volatile double LMS7002M_rfe_set_loopback_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain);
 
 /*!
  * Set the TIA gain for the RX RF frontend.
@@ -813,7 +812,7 @@ LMS7002M_API double LMS7002M_rfe_set_loopback_lna(LMS7002M_t *self, const LMS700
  * \param gain the gain value in dB 0 to 12
  * \return the actual gain value in dB
  */
-LMS7002M_API double LMS7002M_rfe_set_tia(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain);
+LMS7002M_API volatile double LMS7002M_rfe_set_tia(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain);
 
 #ifdef __cplusplus
 }

@@ -13,12 +13,14 @@
 //TODO ifdef this for printing on other platforms, ex kprintf
 
 #include <LMS7002M/LMS7002M_logger.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <linux/kernel.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 
 /***********************************************************************
  * ANSI terminal colors for default logger
  **********************************************************************/
+ #if 0
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_YELLOW  "\x1b[33m"
@@ -27,7 +29,18 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 #define ANSI_COLOR_BOLD    "\x1b[1m"
+#else
 
+#define ANSI_COLOR_RED     ""
+#define ANSI_COLOR_GREEN   ""
+#define ANSI_COLOR_YELLOW  ""
+#define ANSI_COLOR_BLUE    ""
+#define ANSI_COLOR_MAGENTA ""
+#define ANSI_COLOR_CYAN    ""
+#define ANSI_COLOR_RESET   ""
+#define ANSI_COLOR_BOLD    ""
+
+#endif
 /***********************************************************************
  * Default log message handler implementation
  **********************************************************************/
@@ -35,14 +48,14 @@ void default_handler(const LMS7_log_level_t level, const char *message)
 {
     switch (level)
     {
-    case LMS7_FATAL:    fprintf(stderr, ANSI_COLOR_BOLD ANSI_COLOR_RED "[FATAL] %s" ANSI_COLOR_RESET "\n", message); break;
-    case LMS7_CRITICAL: fprintf(stderr, ANSI_COLOR_BOLD ANSI_COLOR_RED "[CRITICAL] %s" ANSI_COLOR_RESET "\n", message); break;
-    case LMS7_ERROR:    fprintf(stderr, ANSI_COLOR_BOLD ANSI_COLOR_RED "[ERROR] %s" ANSI_COLOR_RESET "\n", message); break;
-    case LMS7_WARNING:  fprintf(stderr, ANSI_COLOR_BOLD ANSI_COLOR_YELLOW "[WARNING] %s" ANSI_COLOR_RESET "\n", message); break;
-    case LMS7_NOTICE:   fprintf(stdout, ANSI_COLOR_GREEN "[NOTICE] %s" ANSI_COLOR_RESET "\n", message); break;
-    case LMS7_INFO:     fprintf(stdout, "[INFO] %s\n", message); break;
-    case LMS7_DEBUG:    fprintf(stdout, "[DEBUG] %s\n", message); break;
-    case LMS7_TRACE:    fprintf(stdout, "[TRACE] %s\n", message); break;
+    case LMS7_FATAL:    printk(ANSI_COLOR_BOLD ANSI_COLOR_RED "[FATAL] %s" ANSI_COLOR_RESET "\n", message); break;
+    case LMS7_CRITICAL: printk( ANSI_COLOR_BOLD ANSI_COLOR_RED "[CRITICAL] %s" ANSI_COLOR_RESET "\n", message); break;
+    case LMS7_ERROR:    printk( ANSI_COLOR_BOLD ANSI_COLOR_RED "[ERROR] %s" ANSI_COLOR_RESET "\n", message); break;
+    case LMS7_WARNING:  printk( ANSI_COLOR_BOLD ANSI_COLOR_YELLOW "[WARNING] %s" ANSI_COLOR_RESET "\n", message); break;
+    case LMS7_NOTICE:   printk( ANSI_COLOR_GREEN "[NOTICE] %s" ANSI_COLOR_RESET "\n", message); break;
+    case LMS7_INFO:     printk( "[INFO] %s\n", message); break;
+    case LMS7_DEBUG:    printk( "[DEBUG] %s\n", message); break;
+    case LMS7_TRACE:    printk( "[TRACE] %s\n", message); break;
     }
 }
 
@@ -65,11 +78,20 @@ void LMS7_log(const LMS7_log_level_t level, const char *message)
 
 void LMS7_vlogf(const LMS7_log_level_t level, const char *format, va_list args)
 {
+#if 0
     if (level > _log_level) return;
     char *message;
     if (vasprintf(&message, format, args) < 0) return;
     LMS7_log(level, message);
     free(message);
+#endif
+
+    if (level > _log_level) return;
+    char message[1000];
+    if (vsprintf(message, format, args) < 0) return;
+    LMS7_log(level, message);
+
+
 }
 
 void LMS7_set_log_handler(const LMS7_log_handler_t handler)

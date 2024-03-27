@@ -1,4 +1,4 @@
-CC=gcc
+CC=/usr/bin/aarch64-linux-gnu-gcc
 CFLAGS= \
 	-D_GNU_SOURCE \
 	-std=c99 \
@@ -26,3 +26,5 @@ access_test.exe: access_test.o $(LMS7_OBJECTS)
 
 clean:
 	rm -f *.exe *.o
+
+	

@@ -10,8 +10,10 @@
 /// http://www.apache.org/licenses/LICENSE-2.0
 ///
 
-#include <stdlib.h>
-#include <math.h> //M_PI
+//#include <stdlib.h>
+//#include <math.h> //M_PI
+
+#define M_PI 3.14159265359
 #include "LMS7002M_impl.h"
 
 void LMS7002M_rxtsp_enable(LMS7002M_t *self, const LMS7002M_chan_t channel, const bool enable)
@@ -56,7 +58,7 @@ void LMS7002M_rxtsp_set_decim(LMS7002M_t *self, const LMS7002M_chan_t channel, c
     LMS7002M_regs_spi_write(self, 0x0403);
 }
 
-void LMS7002M_rxtsp_set_freq(LMS7002M_t *self, const LMS7002M_chan_t channel, const double freqRel)
+void LMS7002M_rxtsp_set_freq(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double freqRel)
 {
     LMS7002M_set_mac_ch(self, channel);
     self->regs->reg_0x040c_cmix_byp = (freqRel==0.0)?1:0;
@@ -157,8 +159,8 @@ void LMS7002M_rxtsp_set_dc_correction(
 void LMS7002M_rxtsp_set_iq_correction(
     LMS7002M_t *self,
     const LMS7002M_chan_t channel,
-    const double phase,
-    const double gain)
+    volatile double phase,
+    volatile double gain)
 {
     LMS7002M_set_mac_ch(self, channel);
 

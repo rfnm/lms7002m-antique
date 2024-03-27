@@ -10,7 +10,7 @@
 /// http://www.apache.org/licenses/LICENSE-2.0
 ///
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include "LMS7002M_impl.h"
 #include <LMS7002M/LMS7002M_logger.h>
 

@@ -10,8 +10,9 @@
 /// http://www.apache.org/licenses/LICENSE-2.0
 ///
 
-#include <stdlib.h>
-#include <math.h> //M_PI
+//#include <stdlib.h>
+//#include <math.h> //M_PI
+#define M_PI 3.14159265359
 #include "LMS7002M_impl.h"
 
 void LMS7002M_txtsp_enable(LMS7002M_t *self, const LMS7002M_chan_t channel, const bool enable)
@@ -53,7 +54,7 @@ void LMS7002M_txtsp_set_interp(LMS7002M_t *self, const LMS7002M_chan_t channel, 
     LMS7002M_regs_spi_write(self, 0x0203);
 }
 
-void LMS7002M_txtsp_set_freq(LMS7002M_t *self, const LMS7002M_chan_t channel, const double freqRel)
+void LMS7002M_txtsp_set_freq(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double freqRel)
 {
     LMS7002M_set_mac_ch(self, channel);
     self->regs->reg_0x0208_cmix_byp = (freqRel==0.0)?1:0;
@@ -108,8 +109,8 @@ void LMS7002M_txtsp_tsg_tone(LMS7002M_t *self, const LMS7002M_chan_t channel)
 void LMS7002M_txtsp_set_dc_correction(
     LMS7002M_t *self,
     const LMS7002M_chan_t channel,
-    const double valI,
-    const double valQ)
+    volatile double valI,
+    volatile double valQ)
 {
     LMS7002M_set_mac_ch(self, channel);
 
@@ -125,8 +126,8 @@ void LMS7002M_txtsp_set_dc_correction(
 void LMS7002M_txtsp_set_iq_correction(
     LMS7002M_t *self,
     const LMS7002M_chan_t channel,
-    const double phase,
-    const double gain)
+    volatile double phase,
+    volatile double gain)
 {
     LMS7002M_set_mac_ch(self, channel);
 

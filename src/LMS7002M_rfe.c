@@ -10,7 +10,7 @@
 /// http://www.apache.org/licenses/LICENSE-2.0
 ///
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include "LMS7002M_impl.h"
 
 void LMS7002M_rfe_enable(LMS7002M_t *self, const LMS7002M_chan_t channel, const bool enable)
@@ -90,10 +90,10 @@ void LMS7002M_rfe_set_path(LMS7002M_t *self, const LMS7002M_chan_t channel, cons
     LMS7002M_trf_enable_loopback(self, channel, enb_trf_loopback);
 }
 
-double LMS7002M_rfe_set_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain)
+volatile double LMS7002M_rfe_set_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain)
 {
-    const double gmax = 30;
-    double val = gain - gmax;
+    volatile double gmax = 30;
+    volatile double val = gain - gmax;
 
     LMS7002M_set_mac_ch(self, channel);
 
@@ -118,10 +118,10 @@ double LMS7002M_rfe_set_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, con
     return val + gmax;
 }
 
-double LMS7002M_rfe_set_loopback_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain)
+volatile double LMS7002M_rfe_set_loopback_lna(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain)
 {
-    const double gmax = 40;
-    double val = gain - gmax;
+    volatile double gmax = 40;
+    volatile double val = gain - gmax;
 
     LMS7002M_set_mac_ch(self, channel);
 
@@ -147,10 +147,10 @@ double LMS7002M_rfe_set_loopback_lna(LMS7002M_t *self, const LMS7002M_chan_t cha
     return val + gmax;
 }
 
-double LMS7002M_rfe_set_tia(LMS7002M_t *self, const LMS7002M_chan_t channel, const double gain)
+volatile double LMS7002M_rfe_set_tia(LMS7002M_t *self, const LMS7002M_chan_t channel, volatile double gain)
 {
-    const double gmax = 12;
-    double val = gain - gmax;
+    volatile double gmax = 12;
+    volatile double val = gain - gmax;
 
     LMS7002M_set_mac_ch(self, channel);
 

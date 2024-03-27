@@ -14,7 +14,7 @@
 //------ this is a generated file, do not edit --------//
 
 #pragma once
-#include <stdio.h>
+//#include <stdio.h>
 
 struct LMS7002M_regs_struct;
 typedef struct LMS7002M_regs_struct LMS7002M_regs_t;
